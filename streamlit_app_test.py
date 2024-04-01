@@ -36,7 +36,7 @@ df = load_data()
 
 # Sidebar Filters
 with st.sidebar:
-    st.title("🧑‍🎓 PickMySchool")
+    st.title("🧑‍🎓 BrightFutures")
     school_query = st.text_input("Search for a school", "")
 
     selected_cities = st.multiselect(
