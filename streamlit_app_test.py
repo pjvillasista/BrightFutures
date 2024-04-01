@@ -111,7 +111,7 @@ def filter_data(df):
 
 filtered_df = filter_data(df)
 
-st.markdown("# 🧑‍🎓PickMySchool")
+st.markdown("# BrightFutures")
 st.markdown("## This dashboard provides education statistics across SoCal cities🏙️")
 
 with st.expander("KPIs", expanded=True):
