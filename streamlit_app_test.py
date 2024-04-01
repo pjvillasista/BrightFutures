@@ -15,7 +15,7 @@ st.set_page_config(
 # Function to load and preprocess data
 @st.cache_data
 def load_data():
-    df = pd.read_csv("data_test/staging/stg_all_schools.csv")
+    df = pd.read_csv("data/staging/stg_all_schools.csv")
     df = df.dropna(subset=["lat", "lon"])  # Ensure lat and lon are not NaN
     # Ensure data types are correct, e.g., boolean columns for filters
     boolean_columns = [
