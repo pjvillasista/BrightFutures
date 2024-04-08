@@ -10,9 +10,9 @@ import pandas as pd
 
 # Read CSV
 df = pd.read_csv('../data/raw/raw_school_data.csv')
-df = df.dropna(subset=['Review Link'])
+df = df.dropna(subset=['Review Link']) # only keep schools with review links
 
-
+# Create an empty list to store raw data
 review_data = []
 
 try:
@@ -31,7 +31,7 @@ try:
             driver.get(review_link)
 
             while True:
-                # Try to find "More" links and click if available
+                # Try to find "More" links and click if available; some reviews have a "more" option
                 try:
                     more_links = driver.find_elements(By.CSS_SELECTOR, "div.review-list-column div.five-star-review div.comment > span > span > a")
                     for link in more_links:
@@ -59,7 +59,7 @@ try:
                         next_button = next_page_buttons[-1]
                         driver.execute_script("arguments[0].scrollIntoView(true);", next_button)
                         driver.execute_script("arguments[0].click();", next_button)
-                        # Wait for a condition that indicates the page has loaded. Adjust selector as necessary.
+                        # Wait for a condition that indicates the page has loaded. 
                         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.review-list-column")))
                     else:
                         print("No more pages to navigate.")
@@ -86,4 +86,4 @@ finally:
     driver.quit()
 
 reviews_df = pd.DataFrame(review_data)
-reviews_df.to_csv('review_test.csv',index=False)
+reviews_df.to_csv('./data/staging/stg_reviews.csv',index=False)
