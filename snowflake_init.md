@@ -43,7 +43,7 @@ External stages are defined to reference raw data stored in cloud storage, allow
 
 ```sql
 CREATE OR REPLACE STAGE BRIGHTFUTURES.STAGING.geoencoded_schools_stage
-    URL='s3://brightfutures-school-info-raw/staging/geoencoded_schools/'
+    URL='s3://brightfutures-school-info-raw/...'
     CREDENTIALS=(aws_key_id='' aws_secret_key='')
     FILE_FORMAT = BRIGHTFUTURES.STAGING.format_csv;
 ```
@@ -52,7 +52,7 @@ CREATE OR REPLACE STAGE BRIGHTFUTURES.STAGING.geoencoded_schools_stage
 
 ```sql
 CREATE OR REPLACE STAGE BRIGHTFUTURES.STAGING.reviews_sentiment_stage
-    URL='s3://brightfutures-school-info-raw/staging/reviews_sentiment/'
+    URL='s3://brightfutures-school-info-raw/...'
     CREDENTIALS=(aws_key_id='' aws_secret_key='')
     FILE_FORMAT = BRIGHTFUTURES.STAGING.format_csv;
 ```
