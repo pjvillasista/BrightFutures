@@ -1,4 +1,5 @@
 # BrightFutures
+![Dashboard Image](images/Dashboard.png)
 
 ## Project Overview
 
