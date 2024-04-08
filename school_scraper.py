@@ -1,5 +1,9 @@
 import logging
 import pandas as pd
+from datetime import datetime
+import boto3
+import os
+from io import StringIO
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -18,7 +22,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 HEADLESS_MODE = True
 TIMEOUT = 10  # seconds for WebDriverWait
 SLEEP_TIME_AFTER_PAGE_LOAD = 1  # seconds, adjust based on your network speed
-SCHOOL_DATA_CSV_FILE = "../data_test/raw/raw_school_data_test.csv"
+SCHOOL_DATA_CSV_FILE = "./data_test/raw/raw_school_data.csv"
 MAX_WORKERS = 4  # Number of concurrent threads for parallel execution
 
 # Initialize WebDriver
@@ -147,6 +151,12 @@ def navigate_to_next_page(driver):
         logging.error(f"Error navigating to next page: {e}")
     return False
 
+def save_to_s3(df, bucket_name, path):
+    csv_buffer = StringIO()
+    df.to_csv(csv_buffer, index=False)
+    s3_resource = boto3.resource('s3')
+    s3_resource.Object(bucket_name, path).put(Body=csv_buffer.getvalue())
+
 # Main function to orchestrate the scraping in parallel
 def main():
     with open('cities.txt') as file:
@@ -156,13 +166,20 @@ def main():
     grades = {"e": "Elementary", "m": "Middle", "h": "High"}
 
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(get_school_data_for_city, city, grades) for city in cities]
+        futures = {executor.submit(get_school_data_for_city, city, grades): city for city in cities}
         all_schools_data = []
         for future in as_completed(futures):
             all_schools_data.extend(future.result())
 
-    df_schools = pd.DataFrame(all_schools_data)
-    df_schools.to_csv(SCHOOL_DATA_CSV_FILE, index=False)
+    df = pd.DataFrame(all_schools_data)
+
+    # Construct the S3 path with the current timestamp
+    now = datetime.now()
+    timestamp = now.strftime("%Y%m%d%H%M%S")
+    s3_path = f"raw/school_info/{now.year}/{now.month:02d}/{now.day:02d}/school_info_{timestamp}.csv"
+    
+    # Define the bucket name and save the DataFrame to S3
+    save_to_s3(df, 'brightfutures-school-info-raw', s3_path)
 
 if __name__ == "__main__":
     main()
