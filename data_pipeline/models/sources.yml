@@ -1,0 +1,79 @@
+version: 2
+
+sources:
+  - name: staging
+    database: BRIGHTFUTURES
+    schema: STAGING
+    tables:
+      - name: reviews_sentiment_stage
+        description: "Source table containing sentiment analysis of school reviews."
+        columns:
+          - name: school_name
+            description: "Name of the school the review is for."
+          - name: address
+            description: "Address of the school."
+          - name: review
+            description: "Text of the review."
+          - name: processed_review
+            description: "Processed or cleaned text of the review."
+          - name: polarity
+            description: "Polarity score of the review sentiment."
+          - name: subjectivity
+            description: "Subjectivity score of the review sentiment."
+          - name: sentiment
+            description: "Overall sentiment classification of the review."
+          - name: highlights
+            description: "Highlighted text snippets from the review."
+          - name: positive_highlights
+            description: "Positive text snippets highlighted from the review."
+          - name: negative_highlights
+            description: "Negative text snippets highlighted from the review."
+      - name: geoencoded_schools_stage
+        description: "Source table containing detailed information and geocoding for schools."
+        columns:
+          - name: school_name
+            description: "Name of the school."
+          - name: address
+            description: "Physical address of the school."
+          - name: gso_rating
+            description: "GreatSchools.org rating of the school."
+          - name: academic_progress
+            description: "Rating of the school's academic progress."
+          - name: test_scores
+            description: "School's test scores rating."
+          - name: equity_scores
+            description: "Equity scores rating of the school."
+          - name: school_types
+            description: "Types of school, e.g., public, private."
+          - name: star_rating
+            description: "Star rating of the school."
+          - name: review_link
+            description: "Link to the school's reviews on GreatSchools.org."
+          - name: school_link
+            description: "Direct link to the school's information page on GreatSchools.org."
+          - name: city
+            description: "City where the school is located."
+          - name: is_prek
+            description: "Indicates if the school offers Pre-K education."
+          - name: is_elementary
+            description: "Indicates if the school is an elementary school."
+          - name: is_middle
+            description: "Indicates if the school offers middle school education."
+          - name: is_high
+            description: "Indicates if the school is a high school."
+          - name: normalized_test_scores
+            description: "Normalized test scores of the school."
+          - name: normalized_academic_progress
+            description: "Normalized academic progress rating."
+          - name: normalized_equity_scores
+            description: "Normalized equity scores."
+          - name: composite_score
+            description: "Composite score combining various metrics."
+          - name: score_category
+            description: "Categorization based on the composite score."
+          - name: coordinates
+            description: "Geographical coordinates of the school."
+          - name: latitude
+            description: "Latitude part of the school's geographical location."
+          - name: longitude
+            description: "Longitude part of the school's geographical location."
