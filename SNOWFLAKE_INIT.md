@@ -90,7 +90,7 @@ CREATE OR REPLACE SCHEMA BRIGHTFUTURES.SNOWPIPE_SCHEMA;
 CREATE OR REPLACE PIPE BRIGHTFUTURES.SNOWPIPE_SCHEMA.geoencoded_schools_pipe
 AUTO_INGEST = TRUE
 AS
-COPY INTO BRIGHTFUTURES.DATA_SCHEMA.GEOENCODED_SCHOOLS
+COPY INTO BRIGHTFUTURES.STAGING.geoencoded_schools_stage
 FROM @BRIGHTFUTURES.STAGING.geoencoded_schools_stage
 FILE_FORMAT = (FORMAT_NAME = BRIGHTFUTURES.STAGING.format_csv);
 ```
@@ -101,7 +101,7 @@ FILE_FORMAT = (FORMAT_NAME = BRIGHTFUTURES.STAGING.format_csv);
 CREATE OR REPLACE PIPE BRIGHTFUTURES.SNOWPIPE_SCHEMA.reviews_sentiment_pipe
 AUTO_INGEST = TRUE
 AS
-COPY INTO BRIGHTFUTURES.DATA_SCHEMA.REVIEWS_SENTIMENT
+COPY INTO BRIGHTFUTURES.DATA_SCHEMA.reviews_sentiment_stage
 FROM @BRIGHTFUTURES.STAGING.reviews_sentiment_stage
 FILE_FORMAT = (FORMAT_NAME = BRIGHTFUTURES.STAGING.format_csv);
 ```
@@ -113,7 +113,7 @@ FILE_FORMAT = (FORMAT_NAME = BRIGHTFUTURES.STAGING.format_csv);
 ### Data Schema Creation
 
 ```sql
-CREATE SCHEMA IF NOT EXISTS BRIGHTFUTURES.DATA_SCHEMA;
+CREATE SCHEMA IF NOT EXISTS BRIGHTFUTURES.STAGING;
 ```
 
 **Why?** Defines a dedicated schema for cleaned and transformed data, separating it from raw staging data. This is
@@ -125,13 +125,13 @@ a best practice for data organization and access control.
 #### Geoencoded Schools Table
 
 ```sql
-CREATE TABLE IF NOT EXISTS BRIGHTFUTURES.DATA_SCHEMA.GEOENCODED_SCHOOLS ( ... );
+CREATE TABLE IF NOT EXISTS BRIGHTFUTURES.STAGING.GEOENCODED_SCHOOLS ( ... );
 ```
 
 #### Reviews Sentiment Table
 
 ```sql
-CREATE TABLE IF NOT EXISTS BRIGHTFUTURES.DATA_SCHEMA.REVIEWS_SENTIMENT ( ... );
+CREATE TABLE IF NOT EXISTS BRIGHTFUTURES.STAGING.REVIEWS_SENTIMENT ( ... );
 ```
 
 **Why?** Creating specific tables for different data types ensures structured data storage, facilitating efficient querying and analysis. Each table's schema is designed to hold relevant data attributes, enabling detailed data insights.
