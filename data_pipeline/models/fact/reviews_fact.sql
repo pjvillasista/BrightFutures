@@ -1,3 +1,4 @@
+-- models/fact/reviews_fact.sql
 {{
   config(
     materialized = 'incremental',
@@ -6,9 +7,19 @@
     )
 }}
 
+WITH deduplicated_reviews AS (
+  SELECT
+    *,
+    ROW_NUMBER() OVER (
+      PARTITION BY school_name, address, review
+      ORDER BY polarity DESC
+    ) AS rn
+  FROM {{ source('staging', 'reviews_sentiment_stage') }}
+)
+
 SELECT
-    {{ dbt_utils.generate_surrogate_key(['school_name', 'address', 'review']) }} AS review_fact_id,
-    MD5(school_name || address) AS school_id, -- Foreign key to `school_details_dim`
+    {{ dbt_utils.generate_surrogate_key(['school_name', 'address', 'review', 'polarity']) }} AS review_fact_id,
+    {{ generate_school_id('school_name', 'address') }} AS school_id,
     review,
     processed_review,
     polarity,
@@ -16,4 +27,5 @@ SELECT
     sentiment,
     positive_highlights,
     negative_highlights
-FROM {{ source('staging', 'reviews_sentiment_stage') }}
+FROM deduplicated_reviews
+WHERE rn = 1

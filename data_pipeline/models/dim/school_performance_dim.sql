@@ -1,7 +1,8 @@
+-- models/dim/school_performance_dim.sql
 {{ config(materialized='view') }}
 
 SELECT
-    MD5(school_name || address) AS school_id,
+    {{ generate_school_id('school_name', 'address') }} AS school_id,
     gso_rating,
     academic_progress,
     test_scores,
