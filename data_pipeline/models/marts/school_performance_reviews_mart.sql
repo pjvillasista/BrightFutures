@@ -1,78 +1,62 @@
-{{ config(materialized='table') }}
+-- models/school_mart.sql
+{{ config(materialized='view') }}
 
-WITH school_details AS (
-    SELECT
-        school_id,
-        school_name,
-        address,
-        city,
-        school_link,
-        is_prek,
-        is_elementary,
-        is_middle,
-        is_high
-    FROM {{ ref('school_details_dim') }}
+with school_base as (
+    select
+        l.SCHOOL_ID,
+        l.SCHOOL_NAME,
+        l.ADDRESS,
+        l.CITY,
+        l.COORDINATES,
+        l.LATITUDE,
+        l.LONGITUDE,
+        d.SCHOOL_LINK,
+        d.IS_PREK,
+        d.IS_ELEMENTARY,
+        d.IS_MIDDLE,
+        d.IS_HIGH,
+        p.GSO_RATING,
+        p.ACADEMIC_PROGRESS,
+        p.TEST_SCORES,
+        p.EQUITY_SCORES,
+        p.SCORE_CATEGORY
+    from {{ ref('location_dim') }} l
+    join {{ ref('school_details_dim') }} d on l.SCHOOL_ID = d.SCHOOL_ID
+    join {{ ref('school_performance_dim') }} p on l.SCHOOL_ID = p.SCHOOL_ID
 ),
-
-school_location AS (
-    SELECT
-        school_id,
-        address AS location_address,
-        city AS location_city,
-        coordinates,
-        latitude,
-        longitude
-    FROM {{ ref('location_dim') }}
-),
-
-school_performance AS (
-    SELECT
-        school_id,
-        gso_rating,
-        academic_progress,
-        test_scores,
-        equity_scores,
-        star_rating,
-        composite_score,
-        score_category
-    FROM {{ ref('school_performance_dim') }}
-),
-
-review_facts AS (
-    SELECT
-        school_id,
-        review_fact_id,
-        polarity,
-        sentiment,
-        positive_highlights,
-        negative_highlights
-    FROM {{ ref('reviews_fact') }}
+review_summary as (
+    select
+        SCHOOL_ID,
+        avg(POLARITY) as polarity,
+        listagg(SENTIMENT, ', ') within group (order by REVIEW_ID) as sentiments, -- Collecting sentiments
+        listagg(POSITIVE_HIGHLIGHTS, ' ') within group (order by REVIEW_ID) as positive_highlights,
+        listagg(NEGATIVE_HIGHLIGHTS, ' ') within group (order by REVIEW_ID) as negative_highlights
+    from {{ ref('reviews_fact') }}
+    group by SCHOOL_ID
 )
 
-SELECT
-    sd.school_name,
-    sl.location_address AS address,
-    sl.location_city AS city,
-    sl.coordinates,
-    sl.latitude,
-    sl.longitude,
-    sd.school_link,
-    sd.is_prek,
-    sd.is_elementary,
-    sd.is_middle,
-    sd.is_high,
-    sp.gso_rating,
-    sp.academic_progress,
-    sp.test_scores,
-    sp.equity_scores,
-    sp.star_rating,
-    sp.composite_score,
-    sp.score_category,
-    rf.polarity,
-    rf.sentiment,
-    rf.positive_highlights,
-    rf.negative_highlights
-FROM school_details sd
-LEFT JOIN school_location sl ON sd.school_id = sl.school_id
-LEFT JOIN school_performance sp ON sd.school_id = sp.school_id
-LEFT JOIN review_facts rf ON sd.school_id = rf.school_id
+
+
+select
+    b.SCHOOL_NAME,
+    b.ADDRESS,
+    b.CITY,
+    b.COORDINATES,
+    b.LATITUDE,
+    b.LONGITUDE,
+    b.SCHOOL_LINK,
+    b.IS_PREK,
+    b.IS_ELEMENTARY,
+    b.IS_MIDDLE,
+    b.IS_HIGH,
+    b.GSO_RATING,
+    b.ACADEMIC_PROGRESS,
+    b.TEST_SCORES,
+    b.EQUITY_SCORES,
+    b.SCORE_CATEGORY,
+    r.polarity,
+    r.sentiments,
+    r.positive_highlights,
+    r.negative_highlights
+from school_base b
+left join review_summary r on b.SCHOOL_ID = r.SCHOOL_ID
