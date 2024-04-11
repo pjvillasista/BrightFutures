@@ -29,7 +29,7 @@ This project is born out of a forward-thinking approach to educational planning.
 ### Installation
 Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/school-selection-tool.git
+   git clone https://github.com/pjvillasista/BrightFutures.git
    ```
 Install Requirements
 ```bash
