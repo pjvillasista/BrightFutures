@@ -38,7 +38,7 @@ def preprocess_and_geoencode(df):
             print(f"Error geocoding {address}: {e}")
             return (None, None)
 
-    # Safely geocode addresses and ensure the list for DataFrame creation doesn't include NoneType objects
+    #  Geocode addresses and ensure the list for DataFrame creation doesn't include NoneType objects
     coordinates_list = []
     for address in df["ADDRESS"]:
         result = geocode_address(address)
@@ -48,29 +48,8 @@ def preprocess_and_geoencode(df):
     df[["Latitude", "Longitude"]] = pd.DataFrame(coordinates_list, index=df.index)
 
     df["transformed_at"] = pd.Timestamp.now(tz="UTC")
-    df = df[
-        [
-            "SCHOOL_NAME",
-            "ADDRESS",
-            "GS_RATING",
-            "ACADEMIC_PROGRESS",
-            "TEST_SCORES",
-            "EQUITY_SCORES",
-            "SCHOOL_TYPES",
-            "STAR_RATING",
-            "REVIEW_LINK",
-            "SCHOOL_LINK",
-            "CITY",
-            "is_prek",
-            "is_elementary",
-            "is_middle",
-            "is_high",
-            "Latitude",
-            "Longitude",
-            "transformed_at",
-        ]
-    ]
-    return df
+
+    return df.drop(["BATCH_ID", "EXTRACTED_AT"], axis=1)
 
 
 def snowpark_session_create():
@@ -97,9 +76,7 @@ def load_data_to_snowflake(session, df, table_name):
 
 def main():
     session = snowpark_session_create()
-    df = session.table(
-        "RAW.RAW_SCHOOL_INFO"
-    ).to_pandas()  # Assuming your raw table is in the RAW schema
+    df = session.table("RAW.RAW_SCHOOL_INFO").to_pandas()  # Get the RAW data
     processed_df = preprocess_and_geoencode(df)
 
     # Specify the target table within the STAGING schema
