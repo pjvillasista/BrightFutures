@@ -93,7 +93,7 @@ def get_reviews(review_link):
                         "arguments[0].scrollIntoView(true);", next_button
                     )
                     driver.execute_script("arguments[0].click();", next_button)
-                    # Wait for a condition that indicates the page has loaded. Adjust selector as necessary.
+                    # Wait for a condition that indicates the page has loaded.
                     wait.until(
                         EC.presence_of_element_located(
                             (By.CSS_SELECTOR, "div.review-list-column")
@@ -118,10 +118,10 @@ def load_data_to_snowflake(session, df, table_name):
 
 
 def main():
-    # start snowpark session
+    # Start snowpark session
     session = snowpark_session_create()
 
-    # call the table, make it a pandas dataframe
+    # Call the table, make it a pandas dataframe
     df = session.table("RAW_SCHOOL_INFO").to_pandas()
     df = df.dropna(subset=["REVIEW_LINK"])
 
@@ -151,6 +151,7 @@ def main():
 
     load_data_to_snowflake(session, reviews_df, "RAW_SCHOOL_REVIEW")
 
+    # Make sure to close session
     session.close()
 
 
