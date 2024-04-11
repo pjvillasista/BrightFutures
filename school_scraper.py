@@ -24,7 +24,7 @@ logging.basicConfig(
 
 # Constants
 HEADLESS_MODE = True
-TIMEOUT = 10  # Adjust based on network speed
+TIMEOUT = 10
 MAX_WORKERS = 4
 
 
@@ -35,9 +35,7 @@ def init_driver(headless=True):
     options.add_argument("--disable-gpu")  # Disable GPU hardware acceleration
     options.add_argument("--disable-extensions")  # Disable extensions
     options.add_argument("--no-sandbox")  # Bypass OS security model
-    options.add_argument(
-        "--disable-dev-shm-usage"
-    )  # Overcome limited resource problems
+    options.add_argument("--disable-dev-shm-usage")
 
     service = Service(ChromeDriverManager().install())
     return webdriver.Chrome(service=service, options=options)
@@ -81,7 +79,6 @@ def get_school_data_for_city(city, grades, batch_id, load_timestamp):
     return all_schools_list
 
 
-# Extraction functions remain largely unchanged but should be reviewed for efficiency
 def extract_school_data(school, city, batch_id, load_timestamp):
     # Extract the school name
     name = school.find_element(By.CSS_SELECTOR, "a.name").text
